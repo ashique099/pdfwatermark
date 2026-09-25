@@ -6,7 +6,7 @@ import time
 import logging
 from datetime import datetime
 from werkzeug.utils import secure_filename
-from flask import Flask, request, jsonify, render_template, send_file, abort
+from flask import Flask, request, jsonify, render_template, send_file, abort, send_from_directory
 from PIL import Image
 
 try:
@@ -407,6 +407,24 @@ def index():
     """Renders the main single-page application."""
     cleanup_old_files()
     return render_template('index.html')
+
+
+@app.route('/favicon.ico')
+def favicon_ico():
+    return send_from_directory(os.path.join(app.root_path, 'static'),
+                               'favicon.ico', mimetype='image/vnd.microsoft.icon')
+
+
+@app.route('/favicon.png')
+def favicon_png():
+    return send_from_directory(os.path.join(app.root_path, 'static'),
+                               'favicon.png', mimetype='image/png')
+
+
+@app.route('/favicon.svg')
+def favicon_svg():
+    return send_from_directory(os.path.join(app.root_path, 'static'),
+                               'favicon.svg', mimetype='image/svg+xml')
 
 
 @app.route('/api/health', methods=['GET'])
