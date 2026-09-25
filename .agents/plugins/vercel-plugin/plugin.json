@@ -1,0 +1,5 @@
+{
+  "name": "vercel-plugin",
+  "version": "1.0.0",
+  "description": "Transforms your coding agent into a Vercel expert with architecture patterns, deployment runbooks, serverless conventions, and troubleshooting tools."
+}
