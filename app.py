@@ -118,6 +118,7 @@ def get_font_code(font_family, is_bold=False, is_italic=False):
         'times new roman': 'tiro',
         'serif': 'tiro',
         'courier': 'cour',
+        
         'courier new': 'cour',
         'monospace': 'cour'
     }
@@ -409,22 +410,42 @@ def index():
     return render_template('index.html')
 
 
+@app.route('/static/<path:filename>')
+def serve_static(filename):
+    """Fallback static handler checking public/static and static folders."""
+    for folder in ['public/static', 'static']:
+        path = os.path.join(app.root_path, folder)
+        target = os.path.join(path, filename)
+        if os.path.exists(target):
+            return send_from_directory(path, filename)
+    return abort(404)
+
+
 @app.route('/favicon.ico')
 def favicon_ico():
-    return send_from_directory(os.path.join(app.root_path, 'static'),
-                               'favicon.ico', mimetype='image/vnd.microsoft.icon')
+    for folder in ['public', 'static']:
+        path = os.path.join(app.root_path, folder)
+        if os.path.exists(os.path.join(path, 'favicon.ico')):
+            return send_from_directory(path, 'favicon.ico', mimetype='image/vnd.microsoft.icon')
+    return abort(404)
 
 
 @app.route('/favicon.png')
 def favicon_png():
-    return send_from_directory(os.path.join(app.root_path, 'static'),
-                               'favicon.png', mimetype='image/png')
+    for folder in ['public', 'static']:
+        path = os.path.join(app.root_path, folder)
+        if os.path.exists(os.path.join(path, 'favicon.png')):
+            return send_from_directory(path, 'favicon.png', mimetype='image/png')
+    return abort(404)
 
 
 @app.route('/favicon.svg')
 def favicon_svg():
-    return send_from_directory(os.path.join(app.root_path, 'static'),
-                               'favicon.svg', mimetype='image/svg+xml')
+    for folder in ['public', 'static']:
+        path = os.path.join(app.root_path, folder)
+        if os.path.exists(os.path.join(path, 'favicon.svg')):
+            return send_from_directory(path, 'favicon.svg', mimetype='image/svg+xml')
+    return abort(404)
 
 
 @app.route('/api/health', methods=['GET'])
