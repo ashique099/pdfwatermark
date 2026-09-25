@@ -296,12 +296,12 @@ def validate_image(image_file):
 
 def apply_text_watermark(doc, target_pages, text, font_family, font_size,
                          color_hex, opacity, rotation, position,
-                         custom_x=None, custom_y=None):
+                         custom_x=None, custom_y=None,
+                         is_bold=False, is_italic=False):
     """
     Inserts rotated and styled text watermark on selected pages using PyMuPDF.
     """
-    font_code = get_font_code(font_family, False, False)
-    # Check if bold/italic is part of request
+    font_code = get_font_code(font_family, is_bold, is_italic)
     color_rgb = hex_to_rgb(color_hex)
     opacity = max(0.05, min(1.0, float(opacity)))
     rotation_deg = float(rotation)
