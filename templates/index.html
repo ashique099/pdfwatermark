@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PDF Watermark Tool — Fast, Secure & Professional PDF Watermarking</title>
+  <meta name="description" content="Add customizable text and image watermarks to your PDF documents instantly. Live PDF.js preview, high-resolution rendering, and secure processing.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/style.css">
+  
+  <!-- PDF.js library with local vendor fallback -->
+  <script src="/static/vendor/pdf.min.js"></script>
+</head>
+<body>
+  <!-- App Header -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <path d="M9 15l2 2 4-4"></path>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1>PDF Watermark Tool</h1>
+          <span class="brand-badge">SaaS Edition</span>
+        </div>
+      </div>
+      <div class="header-badges">
+        <span class="feature-tag"><span class="dot"></span> Client Live Preview</span>
+        <span class="feature-tag"><span class="dot green"></span> PyMuPDF Fast Engine</span>
+        <span class="feature-tag"><span class="dot purple"></span> Transparent PNG</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="main-content">
+    <div class="content-wrapper">
+
+      <!-- Notifications & Alert Banner -->
+      <div id="alertBanner" class="alert-banner hidden" role="alert">
+        <div class="alert-icon" id="alertIcon"></div>
+        <div class="alert-content">
+          <strong id="alertTitle">Notice</strong>
+          <span id="alertMessage">Message here</span>
+        </div>
+        <button type="button" class="alert-close" id="alertCloseBtn" aria-label="Close alert">&times;</button>
+      </div>
+
+      <!-- Upload Section (Visible initial state or expandable) -->
+      <section id="uploadSection" class="upload-section">
+        <div class="section-card upload-card" id="dropZone">
+          <input type="file" id="pdfFileInput" accept="application/pdf,.pdf" class="file-input-hidden">
+          
+          <div class="upload-content" id="uploadPlaceholder">
+            <div class="upload-icon-circle">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
+            </div>
+            <h3>Drag & Drop your PDF here</h3>
+            <p class="upload-subtext">Supports documents up to <strong>50 MB</strong></p>
+            <div class="upload-actions">
+              <button type="button" class="btn btn-primary upload-browse-btn" id="browsePdfBtn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="17 8 12 3 7 8"></polyline>
+                  <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+                Choose PDF File
+              </button>
+            </div>
+          </div>
+
+          <!-- Active File Info Display -->
+          <div class="file-info-bar hidden" id="fileInfoBar">
+            <div class="file-details">
+              <div class="file-pdf-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                  <text x="7" y="18" font-size="7" font-weight="bold" fill="currentColor">PDF</text>
+                </svg>
+              </div>
+              <div class="file-meta">
+                <span class="file-name" id="fileNameDisplay">document.pdf</span>
+                <span class="file-size" id="fileSizeDisplay">0.0 MB</span>
+              </div>
+            </div>
+            <div class="file-bar-actions">
+              <button type="button" class="btn btn-secondary btn-sm" id="replacePdfBtn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="23 4 23 10 17 10"></polyline>
+                  <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                </svg>
+                Replace
+              </button>
+              <button type="button" class="btn btn-outline-danger btn-sm" id="clearPdfBtn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+                Remove
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- App Workspace (Shown once a PDF is loaded) -->
+      <div id="workspaceArea" class="workspace-area hidden">
+        <div class="workspace-grid">
+          
+          <!-- LEFT COLUMN: PDF Live Preview -->
+          <div class="workspace-preview-col">
+            <div class="section-card preview-card">
+              <div class="preview-header">
+                <div class="preview-title">
+                  <h2>Document Preview</h2>
+                  <span class="preview-badge" id="previewModeBadge">Live Overlay</span>
+                </div>
+                <div class="preview-controls">
+                  <button type="button" class="btn-icon" id="prevPageBtn" title="Previous page" disabled>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="15 18 9 12 15 6"></polyline>
+                    </svg>
+                  </button>
+                  <span class="page-indicator">
+                    Page <strong id="currentPageNum">1</strong> of <span id="totalPagesNum">1</span>
+                  </span>
+                  <button type="button" class="btn-icon" id="nextPageBtn" title="Next page" disabled>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                  </button>
+                  <div class="zoom-group">
+                    <button type="button" class="btn-icon" id="zoomOutBtn" title="Zoom Out">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        <line x1="8" y1="11" x2="14" y2="11"></line>
+                      </svg>
+                    </button>
+                    <span class="zoom-label" id="zoomLabel">Fit</span>
+                    <button type="button" class="btn-icon" id="zoomInBtn" title="Zoom In">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        <line x1="11" y1="8" x2="11" y2="14"></line>
+                        <line x1="8" y1="11" x2="14" y2="11"></line>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- PDF Canvas Viewport Container -->
+              <div class="preview-viewport-wrapper" id="previewViewportWrapper">
+                <div id="pdfLoadingSpinner" class="pdf-render-spinner hidden">
+                  <div class="spinner"></div>
+                  <span>Rendering PDF...</span>
+                </div>
+
+                <div class="preview-canvas-container" id="canvasContainer">
+                  <!-- Underlying PDF.js canvas -->
+                  <canvas id="pdfRenderCanvas"></canvas>
+                  <!-- Overlay canvas for pixel-perfect dynamic watermark preview -->
+                  <canvas id="watermarkOverlayCanvas"></canvas>
+                </div>
+              </div>
+
+              <div class="preview-footer-hint">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="16" x2="12" y2="12"></line>
+                  <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                </svg>
+                <span>Preview visually aligns with high-precision PyMuPDF backend output.</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT COLUMN: Watermark Configuration Settings -->
+          <div class="workspace-settings-col">
+            <div class="section-card settings-card">
+              
+              <!-- Mode Tabs: Text vs Image -->
+              <div class="mode-tab-group" role="tablist">
+                <button type="button" class="mode-tab active" id="tabTextMode" role="tab" aria-selected="true">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="4 7 4 4 20 4 20 7"></polyline>
+                    <line x1="9" y1="20" x2="15" y2="20"></line>
+                    <line x1="12" y1="4" x2="12" y2="20"></line>
+                  </svg>
+                  Text Watermark
+                </button>
+                <button type="button" class="mode-tab" id="tabImageMode" role="tab" aria-selected="false">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                    <polyline points="21 15 16 10 5 21"></polyline>
+                  </svg>
+                  Image Watermark
+                </button>
+              </div>
+
+              <form id="watermarkForm" class="settings-form" onsubmit="return false;">
+                
+                <!-- 1. TEXT WATERMARK CONTROLS -->
+                <div id="textControlsSection" class="controls-panel">
+                  <!-- Text Input -->
+                  <div class="form-group">
+                    <div class="label-with-hint">
+                      <label for="watermarkTextInput">Watermark Text</label>
+                      <span class="input-char-counter" id="textCharCounter">0</span>
+                    </div>
+                    <div class="input-with-icon">
+                      <input type="text" id="watermarkTextInput" class="form-input" placeholder="e.g. © Disha Online Classes" value="© Disha Online Classes">
+                    </div>
+                  </div>
+
+                  <!-- Typography Settings Grid -->
+                  <div class="form-row-grid">
+                    <div class="form-group">
+                      <label for="fontFamilySelect">Font Family</label>
+                      <select id="fontFamilySelect" class="form-select">
+                        <option value="helvetica" selected>Helvetica / Arial (Clean)</option>
+                        <option value="times">Times Roman (Serif)</option>
+                        <option value="courier">Courier (Monospace)</option>
+                      </select>
+                    </div>
+
+                    <div class="form-group">
+                      <label>Font Style</label>
+                      <div class="style-toggle-group">
+                        <button type="button" class="style-btn" id="btnBoldToggle" title="Toggle Bold">
+                          <strong>B</strong>
+                        </button>
+                        <button type="button" class="style-btn" id="btnItalicToggle" title="Toggle Italic">
+                          <em>I</em>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Font Size -->
+                  <div class="form-group">
+                    <div class="slider-header">
+                      <label for="fontSizeRange">Font Size</label>
+                      <div class="slider-val-box">
+                        <span id="fontSizeDisplay">36</span><span class="unit">px</span>
+                      </div>
+                    </div>
+                    <input type="range" id="fontSizeRange" min="12" max="140" step="2" value="36" class="form-range">
+                  </div>
+
+                  <!-- Color Picker -->
+                  <div class="form-group">
+                    <label for="textColorPicker">Watermark Color</label>
+                    <div class="color-picker-row">
+                      <div class="color-swatch-wrapper">
+                        <input type="color" id="textColorPicker" value="#000000" class="color-input">
+                      </div>
+                      <input type="text" id="textColorHexInput" value="#000000" maxlength="7" class="form-input hex-input" placeholder="#000000">
+                      <div class="quick-colors">
+                        <button type="button" class="color-dot" data-color="#000000" style="background: #000000;" title="Black"></button>
+                        <button type="button" class="color-dot" data-color="#dc2626" style="background: #dc2626;" title="Red"></button>
+                        <button type="button" class="color-dot" data-color="#2563eb" style="background: #2563eb;" title="Blue"></button>
+                        <button type="button" class="color-dot" data-color="#64748b" style="background: #64748b;" title="Slate Gray"></button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 2. IMAGE WATERMARK CONTROLS -->
+                <div id="imageControlsSection" class="controls-panel hidden">
+                  <!-- Image Upload Box -->
+                  <div class="form-group">
+                    <label>Watermark Image (PNG, JPG, WEBP)</label>
+                    <input type="file" id="imageFileInput" accept="image/png,image/jpeg,image/jpg,image/webp" class="file-input-hidden">
+                    
+                    <div class="image-upload-box" id="imageDropZone">
+                      <div id="imageUploadPrompt" class="image-prompt">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                          <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                          <polyline points="21 15 16 10 5 21"></polyline>
+                        </svg>
+                        <span>Click or Drag Image here</span>
+                        <small>Transparent PNG recommended</small>
+                      </div>
+                      <div id="imagePreviewContainer" class="image-preview-container hidden">
+                        <img id="imageThumbnail" src="" alt="Watermark preview thumbnail">
+                        <div class="image-meta-info">
+                          <span id="imageMetaName">logo.png</span>
+                          <span id="imageMetaDim">0 × 0 px</span>
+                        </div>
+                        <button type="button" class="btn-icon btn-remove-img" id="removeImageBtn" title="Remove image">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Image Size & Presets -->
+                  <div class="form-group">
+                    <div class="slider-header">
+                      <label for="imageWidthRange">Image Width</label>
+                      <div class="slider-val-box">
+                        <span id="imageWidthDisplay">200</span><span class="unit">px</span>
+                      </div>
+                    </div>
+                    <input type="range" id="imageWidthRange" min="50" max="600" step="5" value="200" class="form-range">
+                    <div class="size-presets">
+                      <button type="button" class="btn-preset" data-preset="120">Small (120px)</button>
+                      <button type="button" class="btn-preset active" data-preset="200">Medium (200px)</button>
+                      <button type="button" class="btn-preset" data-preset="360">Large (360px)</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="settings-divider"></div>
+
+                <!-- 3. COMMON PROPERTIES (OPACITY, ROTATION, POSITION) -->
+                <div class="common-controls-section">
+                  <!-- Opacity Slider -->
+                  <div class="form-group">
+                    <div class="slider-header">
+                      <label for="opacityRange">Opacity</label>
+                      <div class="slider-val-box">
+                        <span id="opacityDisplay">30</span><span class="unit">%</span>
+                      </div>
+                    </div>
+                    <input type="range" id="opacityRange" min="5" max="100" step="1" value="30" class="form-range">
+                  </div>
+
+                  <!-- Rotation Slider with Presets -->
+                  <div class="form-group">
+                    <div class="slider-header">
+                      <label for="rotationRange">Rotation</label>
+                      <div class="slider-val-box">
+                        <span id="rotationDisplay">-45</span><span class="unit">°</span>
+                      </div>
+                    </div>
+                    <input type="range" id="rotationRange" min="-180" max="180" step="1" value="-45" class="form-range">
+                    <div class="angle-presets">
+                      <button type="button" class="btn-angle-preset active" data-angle="-45">-45° (Diagonal)</button>
+                      <button type="button" class="btn-angle-preset" data-angle="0">0° (Horizontal)</button>
+                      <button type="button" class="btn-angle-preset" data-angle="45">+45°</button>
+                      <button type="button" class="btn-angle-preset" data-angle="90">90° (Vertical)</button>
+                    </div>
+                  </div>
+
+                  <!-- Position 9-Grid & Custom Selector -->
+                  <div class="form-group">
+                    <div class="label-with-hint">
+                      <label>Watermark Position</label>
+                      <span class="selected-pos-name" id="currentPosLabel">Center</span>
+                    </div>
+                    <div class="position-matrix">
+                      <button type="button" class="pos-cell" data-pos="topleft" title="Top Left"></button>
+                      <button type="button" class="pos-cell" data-pos="topcenter" title="Top Center"></button>
+                      <button type="button" class="pos-cell" data-pos="topright" title="Top Right"></button>
+                      <button type="button" class="pos-cell" data-pos="bottomleft" title="Bottom Left"></button>
+                      <button type="button" class="pos-cell active" data-pos="center" title="Center"></button>
+                      <button type="button" class="pos-cell" data-pos="bottomright" title="Bottom Right"></button>
+                      <button type="button" class="pos-cell" data-pos="bottomcenter" title="Bottom Center"></button>
+                      <button type="button" class="pos-cell full-width-custom" data-pos="custom" id="posCustomBtn">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <polyline points="5 9 2 12 5 15"></polyline>
+                          <polyline points="9 5 12 2 15 5"></polyline>
+                          <polyline points="15 19 12 22 9 19"></polyline>
+                          <polyline points="19 9 22 12 19 15"></polyline>
+                          <line x1="2" y1="12" x2="22" y2="12"></line>
+                          <line x1="12" y1="2" x2="12" y2="22"></line>
+                        </svg>
+                        Custom Position (Drag or Set X/Y)
+                      </button>
+                    </div>
+
+                    <!-- Custom Position Sliders (Visible when custom is selected) -->
+                    <div id="customPosInputs" class="custom-coord-row hidden">
+                      <div class="coord-item">
+                        <label for="customXRange">X Position: <strong id="customXVal">50%</strong></label>
+                        <input type="range" id="customXRange" min="5" max="95" value="50" class="form-range">
+                      </div>
+                      <div class="coord-item">
+                        <label for="customYRange">Y Position: <strong id="customYVal">50%</strong></label>
+                        <input type="range" id="customYRange" min="5" max="95" value="50" class="form-range">
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="settings-divider"></div>
+
+                  <!-- 4. PAGE SELECTION -->
+                  <div class="form-group">
+                    <label>Apply Watermark To</label>
+                    <div class="page-segmented-control">
+                      <label class="segment-option">
+                        <input type="radio" name="pageSelectionMode" value="all" checked>
+                        <span>All Pages</span>
+                      </label>
+                      <label class="segment-option">
+                        <input type="radio" name="pageSelectionMode" value="first">
+                        <span>First Page</span>
+                      </label>
+                      <label class="segment-option">
+                        <input type="radio" name="pageSelectionMode" value="last">
+                        <span>Last Page</span>
+                      </label>
+                      <label class="segment-option">
+                        <input type="radio" name="pageSelectionMode" value="custom">
+                        <span>Custom</span>
+                      </label>
+                    </div>
+
+                    <!-- Custom pages text input -->
+                    <div id="customPagesBox" class="custom-pages-input-wrap hidden">
+                      <input type="text" id="customPagesInput" class="form-input" placeholder="e.g. 1, 3, 5-8, 12">
+                      <small class="helper-text">Enter individual pages or ranges separated by commas.</small>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 5. ACTION BUTTON -->
+                <div class="form-submit-row">
+                  <button type="button" class="btn btn-action-submit" id="addWatermarkBtn">
+                    <span class="btn-spinner hidden" id="actionBtnSpinner"></span>
+                    <span class="btn-icon-label" id="actionBtnIcon">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                        <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                      </svg>
+                    </span>
+                    <span id="actionBtnText">Add Watermark</span>
+                  </button>
+                </div>
+              </form>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Result Card (Modal / Inline banner after successful watermark) -->
+      <section id="resultCard" class="result-card-section hidden">
+        <div class="result-card">
+          <div class="result-icon-check">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </div>
+          <h3>Watermark Added Successfully!</h3>
+          <p id="resultDetails">Your document has been processed with high-precision PyMuPDF.</p>
+          <div class="result-actions">
+            <a id="downloadResultBtn" href="#" class="btn btn-success btn-lg" download>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              Download Watermarked PDF
+            </a>
+            <button type="button" class="btn btn-outline" id="watermarkAnotherBtn">
+              Process Another File
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Processing Overlay Modal -->
+      <div id="processingModal" class="processing-modal-backdrop hidden">
+        <div class="processing-modal">
+          <div class="spinner-large"></div>
+          <h4>Processing PDF...</h4>
+          <p>Adding watermark to your document.<br>Please don't close this page.</p>
+          <div class="progress-bar-container">
+            <div class="progress-bar-indeterminate"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    <div class="footer-container">
+      <p>PDF Watermark Tool &copy; 2026. Powered by PyMuPDF, Pillow &amp; PDF.js. No tracking, zero file retention.</p>
+    </div>
+  </footer>
+
+  <script src="/static/js/script.js"></script>
+</body>
+</html>

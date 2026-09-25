@@ -1,0 +1,61 @@
+name: Deploy to Hostinger
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy to Hostinger
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: setup-python@v5
+        with:
+          python-version: '3.11'
+
+      # Option 1: Deploy via SSH (Hostinger VPS or Shared Hosting with SSH enabled)
+      # To enable: Add HOSTINGER_HOST, HOSTINGER_USER, and HOSTINGER_SSH_KEY to GitHub Secrets
+      - name: Deploy via SSH to Hostinger
+        if: "${{ env.HOSTINGER_HOST != '' }}"
+        env:
+          HOSTINGER_HOST: ${{ secrets.HOSTINGER_HOST }}
+          HOSTINGER_USER: ${{ secrets.HOSTINGER_USER }}
+          HOSTINGER_SSH_KEY: ${{ secrets.HOSTINGER_SSH_KEY }}
+          HOSTINGER_TARGET_DIR: ${{ secrets.HOSTINGER_TARGET_DIR || 'public_html' }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$HOSTINGER_SSH_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H "$HOSTINGER_HOST" >> ~/.ssh/known_hosts
+
+          # Sync files to Hostinger
+          rsync -avz --exclude='.git' --exclude='__pycache__' --exclude='venv' --exclude='uploads' --exclude='output' --exclude='temp' ./ "$HOSTINGER_USER@$HOSTINGER_HOST:~/$HOSTINGER_TARGET_DIR/"
+
+          # Trigger virtualenv dependency install & application restart
+          ssh "$HOSTINGER_USER@$HOSTINGER_HOST" "cd ~/$HOSTINGER_TARGET_DIR && [ -d venv ] && source venv/bin/activate && pip install -r requirements.txt; touch tmp/restart.txt 2>/dev/null || true"
+
+      # Option 2: Deploy via FTP / SFTP (Standard Hostinger Shared / Cloud hosting)
+      # To enable: Add HOSTINGER_FTP_SERVER, HOSTINGER_FTP_USERNAME, and HOSTINGER_FTP_PASSWORD to GitHub Secrets
+      - name: Deploy via FTP/SFTP to Hostinger
+        if: "${{ env.HOSTINGER_FTP_SERVER != '' && env.HOSTINGER_HOST == '' }}"
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.HOSTINGER_FTP_SERVER }}
+          username: ${{ secrets.HOSTINGER_FTP_USERNAME }}
+          password: ${{ secrets.HOSTINGER_FTP_PASSWORD }}
+          server-dir: ${{ secrets.HOSTINGER_FTP_DIR || 'public_html/' }}
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/__pycache__/**
+            **/venv/**
+            **/uploads/**
+            **/output/**
+            **/temp/**
